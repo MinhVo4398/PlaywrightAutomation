@@ -1,7 +1,7 @@
 const { test, expect } = require('@playwright/test');
 
 
-test.only('Browser Context Playwright test', async ({ browser }) => {
+test('Browser Context Playwright test', async ({ browser }) => {
 
 
     // chrome - plugins/ cookie
@@ -9,6 +9,8 @@ test.only('Browser Context Playwright test', async ({ browser }) => {
     const page = await context.newPage();
     const userName = page.locator("#username")
     const signIn = page.locator("#signInBtn")
+    const cardTitles = page.locator(".card-body a");
+
     await page.goto("https://rahulshettyacademy.com/loginpagePractise/");
     console.log(await page.title());
     //css 
@@ -23,12 +25,11 @@ test.only('Browser Context Playwright test', async ({ browser }) => {
     await userName.fill("");
     await userName.fill("rahulshettyacademy");
     await signIn.click();
-    console.log(await page.locator(".card-body a").nth(0).textContent()); //return first element in locator
-    console.log(await page.locator(".card-body a").first().textContent()); // return first element in locator
-
-
-
-
+    console.log(await cardTitles.nth(0).textContent()); //return first element in locator
+    console.log(await cardTitles.first().textContent()); // return first element in locator
+    // Nếu ko có 2 dòng trên cái dưới sẽ fail 
+    const allTitles = await cardTitles.allTextContents();
+    console.log(allTitles);
 
 
 });
