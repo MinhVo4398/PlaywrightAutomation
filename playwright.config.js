@@ -8,7 +8,7 @@ module.exports = defineConfig({
   timeout: 30*1000,
   expect: {
 
-    timeout: 5000
+    timeout: 5000,
   },
 
   forbidOnly: !!process.env.CI,
@@ -21,7 +21,9 @@ module.exports = defineConfig({
   
   use: {
     browserName: 'chromium',
-    headless: false
+    headless: false,
+    screenshot: 'on',
+    trace: 'retain-on-failure' // off , on
 
   },
 

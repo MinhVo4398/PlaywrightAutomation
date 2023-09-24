@@ -58,7 +58,7 @@ test('UI Controls Playwright test', async ({ page }) => {
 
 });
 
-test.only('Child windows handle', async ({ browser }) => {
+test('Child windows handle', async ({ browser }) => {
 
     const context = await browser.newContext();
     const page = await context.newPage();
@@ -79,8 +79,6 @@ test.only('Child windows handle', async ({ browser }) => {
     await page.locator("#username").fill(domain);
     await page.pause();
     console.log(await page.locator("#username").textContent());
-
-
 
 
 });
