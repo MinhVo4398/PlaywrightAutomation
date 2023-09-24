@@ -21,7 +21,7 @@ module.exports = defineConfig({
   
   use: {
     browserName: 'webkit',
-    headless: false
+    headless: true
 
   },
 
