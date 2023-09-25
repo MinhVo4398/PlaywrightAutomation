@@ -1,13 +1,28 @@
 const { test, expect } = require('@playwright/test');
 
-test('Browser Context Playwright test', async ({ page }) => {
+test("Client App login", async ({ page }) => {
+    const email = "minh2@gmail.com";
+    const productName = "Zara Coat 3";
+    const products = page.locator(".card-body");
+ 
     await page.goto("https://rahulshettyacademy.com/client");
-    await page.locator("#userEmail").fill("minh2@gmail.com");
+    await page.locator("#userEmail").fill(email);
     await page.locator("#userPassword").fill("Minh@040398");
-    await page.locator("#login").click();
-    //  await page.waitForLoadState('networkidle'); // C1- wait cho api load ra hết các product thì khúc dưới mới get dc text
-    await page.locator(".card-body b").first().waitFor(); // C2- câu trên hơi flaky nên dùng cái này
-    const titles = await page.locator(".card-body b").allTextContents()
-
-    console.log(titles)
-})
+    await page.locator("[value='Login']").click();
+    await page.waitForLoadState("networkidle");
+    const titles = await page.locator(".card-body b").allTextContents();
+    console.log(titles);
+    const count = await products.count(); // this will tell the number of products in the products array
+ 
+    for (let i = 0; i < count; ++i) {
+        if ((await products.nth(i).locator("b").textContent()) === productName);
+        {
+            // add the product to cart
+            await products.nth(i).locator("text= Add To Cart").click();
+            break;
+        }
+    }
+    await page.locator("[routerlink*='cart']").click(); // add to cart
+    await page.locator("div li").first().waitFor(); // this will wait for the orders to load
+ 
+});
