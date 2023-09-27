@@ -24,5 +24,7 @@ test("Client App login", async ({ page }) => {
     }
     await page.locator("[routerlink*='cart']").click(); // add to cart
     await page.locator("div li").first().waitFor(); // this will wait for the orders to load
+    const bool = await page.locator("h3:has-text('Zara Coat 3')").isVisible();
+    expect(bool).toBeTruthy();
  
 });
