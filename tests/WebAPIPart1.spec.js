@@ -6,6 +6,8 @@ const loginPayload = {
     userPassword: "Iamking@000"
 }
 
+let token;
+
 test.beforeAll(async () => {
     const apiContext = await request.newContext();
     const loginResponse = await apiContext.post("https://rahulshettyacademy.com/api/ecom/auth/login",
@@ -14,22 +16,22 @@ test.beforeAll(async () => {
 
         }) // 200,201
     expect(loginResponse.ok()).toBeTruthy();
-    const loginResponseJson = loginResponse.json();
-    const token = loginResponseJson.token;
+    const loginResponseJson = await loginResponse.json();
+     token = loginResponseJson.token;
     console.log(token);
 
 });
 
-test.skip('@Web Client App login', async ({ page }) => {
-    //js file- Login js, DashboardPage
-    const email = "anshika@gmail.com";
+test('Place the order ', async ({ page }) => {
+
+    page.addInitScript(value => {
+        window.localStorage.setItem('token',value);
+    },token);
+
+    const email ="anshika@gmail.com";
     const productName = 'zara coat 3';
-    const products = page.locator(".card-body");
     await page.goto("https://rahulshettyacademy.com/client");
-    await page.locator("#userEmail").fill(email);
-    await page.locator("#userPassword").type("Iamking@000");
-    await page.locator("[value='Login']").click();
-    await page.waitForLoadState('networkidle');
+    const products = page.locator(".card-body");
     await page.locator(".card-body b").first().waitFor();
     const titles = await page.locator(".card-body b").allTextContents();
     console.log(titles);
