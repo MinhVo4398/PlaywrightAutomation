@@ -6,9 +6,20 @@ const loginPayload = {
     userPassword: "Iamking@000"
 }
 
+const orderPayload = {
+    orders: [
+        {
+            country: "Cuba",
+            productOrderedId: "6262e95ae26b7e1a10e89bf0"
+        }
+    ]
+}
+
 let token;
+let orderId;
 
 test.beforeAll(async () => {
+    // Login API
     const apiContext = await request.newContext();
     const loginResponse = await apiContext.post("https://rahulshettyacademy.com/api/ecom/auth/login",
         {
@@ -20,6 +31,21 @@ test.beforeAll(async () => {
      token = loginResponseJson.token;
     console.log(token);
 
+    //
+   const ordeResponse = await apiContext.post(" https://rahulshettyacademy.com/api/ecom/order/create-order", {
+            data: orderPayload,
+            headers:{
+                'Authorization': token,
+                'Content-type': 'application/json'
+            }
+    }  )
+    
+   const orderResponseJson = await ordeResponse.json();
+   console.log(orderResponseJson);
+   orderId = orderResponseJson.orders[0];
+  
+
+   
 });
 
 test('Place the order ', async ({ page }) => {
@@ -31,46 +57,8 @@ test('Place the order ', async ({ page }) => {
     const email ="anshika@gmail.com";
     const productName = 'zara coat 3';
     await page.goto("https://rahulshettyacademy.com/client");
-    const products = page.locator(".card-body");
-    await page.locator(".card-body b").first().waitFor();
-    const titles = await page.locator(".card-body b").allTextContents();
-    console.log(titles);
-    const count = await products.count();
-    for (let i = 0; i < count; ++i) {
-        if (await products.nth(i).locator("b").textContent() === productName) {
-            //add to cart
-            await products.nth(i).locator("text= Add To Cart").click();
-            break;
-        }
-    }
-
-    await page.locator("[routerlink*='cart']").click();
-    //await page.pause();
-
-    await page.locator("div li").first().waitFor();
-    const bool = await page.locator("h3:has-text('zara coat 3')").isVisible();
-    expect(bool).toBeTruthy();
-    await page.locator("text=Checkout").click();
-
-    await page.locator("[placeholder*='Country']").type("ind");
-
-    const dropdown = page.locator(".ta-results");
-    await dropdown.waitFor();
-    const optionsCount = await dropdown.locator("button").count();
-    for (let i = 0; i < optionsCount; ++i) {
-        const text = await dropdown.locator("button").nth(i).textContent();
-        if (text === " India") {
-            await dropdown.locator("button").nth(i).click();
-            break;
-        }
-    }
-
-    expect(page.locator(".user__name [type='text']").first()).toHaveText(email);
-    await page.locator(".action__submit").click();
-    await expect(page.locator(".hero-primary")).toHaveText(" Thankyou for the order. ");
-    const orderId = await page.locator(".em-spacer-1 .ng-star-inserted").textContent();
-    console.log(orderId);
-
+    
+    // Click my order link on the top (API did the order card)
     await page.locator("button[routerlink*='myorders']").click();
     await page.locator("tbody").waitFor();
     const rows = await page.locator("tbody tr");
@@ -84,6 +72,10 @@ test('Place the order ', async ({ page }) => {
         }
     }
     const orderIdDetails = await page.locator(".col-text").textContent();
+    await page.pause();
     expect(orderId.includes(orderIdDetails)).toBeTruthy();
 
 });
+
+// Verify if order created is showing in history page
+// Pre-conditon: create order
